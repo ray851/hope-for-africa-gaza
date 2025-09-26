@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donate – Hope for Africa & Gaza</title>
+  <link href="output.css" rel="stylesheet" />
+</head>
+<body class="bg-white text-gray-800 font-sans">
+
+  <header class="bg-indigo-600 text-white p-6 text-center">
+    <h1 class="text-3xl font-bold">Make a Difference</h1>
+    <p class="text-lg mt-1">Your donation goes directly to those in need.</p>
+  </header>
+
+  <section class="py-16 px-4 max-w-3xl mx-auto text-center">
+    <h2 class="text-2xl font-bold mb-6">Choose an amount to give</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <button class="amount-btn bg-indigo-100 text-indigo-700 font-semibold py-3 rounded-lg hover:bg-indigo-200" data-amount="5">£5</button>
+      <button class="amount-btn bg-indigo-100 text-indigo-700 font-semibold py-3 rounded-lg hover:bg-indigo-200" data-amount="10">£10</button>
+      <button class="amount-btn bg-indigo-100 text-indigo-700 font-semibold py-3 rounded-lg hover:bg-indigo-200" data-amount="25">£25</button>
+      <button class="amount-btn bg-indigo-100 text-indigo-700 font-semibold py-3 rounded-lg hover:bg-indigo-200" data-amount="50">£50</button>
+    </div>
+
+    <p class="mb-4">Or enter your own amount:</p>
+    <input id="customAmount" type="number" placeholder="£ Custom Amount" class="border border-gray-300 p-2 rounded w-1/2 mb-6" min="1" step="0.01">
+
+    <div>
+      <button onclick="submitDonation()" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700">Donate Now</button>
+    </div>
+  </section>
+
+  <div class="text-center mb-10">
+    <a href="index.html" class="text-indigo-600 hover:underline">← Back to Home</a>
+  </div>
+
+  <script>
+    const amountButtons = document.querySelectorAll('.amount-btn');
+    const customAmountInput = document.getElementById('customAmount');
+
+    amountButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        customAmountInput.value = btn.getAttribute('data-amount');
+      });
+    });
+
+    async function submitDonation() {
+      const amount = parseFloat(customAmountInput.value);
+      if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      // Send amount as pounds — backend will convert to pence
+      const res = await fetch("http://localhost:4242/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: amount }), // send pounds
+      });
+
+      if (!res.ok) {
+        alert("Error creating checkout session.");
+        return;
+      }
+
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; // redirect to Stripe Checkout
+      } else {
+        alert("Error creating checkout session.");
+      }
+    }
+  </script>
+
+</body>
+</html>
