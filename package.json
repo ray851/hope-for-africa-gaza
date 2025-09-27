@@ -1,12 +1,11 @@
 {
   "name": "charity-donations",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Donation platform with Stripe + Tailwind",
+  "main": "server.js",
   "scripts": {
     "build:css": "tailwindcss -i ./styles.css -o ./dist/output.css --watch",
-    "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
